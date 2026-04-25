@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRAMMAR QUEST — Present Simple</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a1628;--surface:rgba(255,255,255,0.09);--border:rgba(255,255,255,0.18);--text:#ffffff;--text-dim:rgba(255,255,255,0.75);--text-muted:rgba(255,255,255,0.45);--cyan:#00f0ff;--cyan-dim:rgba(0,240,255,0.15);--cyan-glow:rgba(0,240,255,0.6);--green:#00ff88;--green-dim:rgba(0,255,136,0.15);--green-glow:rgba(0,255,136,0.6);--red:#ff4d6d;--gold:#ffcc00;--gold-dim:rgba(255,204,0,0.18);--gold-glow:rgba(255,204,0,0.6);--purple:#cc77ff;--purple-dim:rgba(204,119,255,0.18);--purple-glow:rgba(204,119,255,0.6);--orange:#ff8c42;--radius:12px;--radius-sm:6px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{min-height:100vh;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:16px;overflow-x:hidden;position:relative;background:linear-gradient(160deg,#060d1e 0%,#0e1a3a 35%,#161030 65%,#060d1e 100%);}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 55% 45% at 15% 25%,rgba(0,100,220,0.35) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 85% 75%,rgba(80,20,160,0.3) 0%,transparent 70%),radial-gradient(ellipse 40% 35% at 55% 5%,rgba(0,180,255,0.2) 0%,transparent 65%);pointer-events:none;z-index:0;}
+#starCanvas{position:fixed;inset:0;z-index:1;pointer-events:none;}
+#particleCanvas{position:fixed;inset:0;z-index:3;pointer-events:none;}
+header{position:relative;z-index:10;padding:0 24px;height:62px;display:flex;align-items:center;justify-content:space-between;background:rgba(6,13,30,0.85);border-bottom:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(16px);}
+header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),var(--purple),transparent);opacity:0.9;}
+.logo{font-family:'Orbitron',monospace;font-weight:900;font-size:18px;letter-spacing:4px;background:linear-gradient(135deg,#00f0ff,#ffffff,#cc77ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 10px rgba(0,240,255,0.5));}
+.logo-sub{font-size:10px;letter-spacing:2px;color:var(--text-muted);font-family:'Rajdhani',sans-serif;-webkit-text-fill-color:var(--text-muted);display:block;margin-top:-3px;}
+.btn-reset{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:7px 14px;border:1px solid rgba(255,77,109,0.35);background:rgba(255,77,109,0.07);color:rgba(255,255,255,0.45);border-radius:var(--radius-sm);cursor:pointer;transition:all 0.25s;}
+.btn-reset:hover{border-color:var(--red);color:var(--red);background:rgba(255,77,109,0.14);}
+.screen{display:none;position:relative;z-index:2;padding:24px;max-width:860px;margin:0 auto;}
+.screen.active{display:block;}
+.map-hero{text-align:center;padding:28px 0 20px;}
+.map-hero h1{font-family:'Orbitron',monospace;font-weight:900;font-size:36px;letter-spacing:6px;background:linear-gradient(135deg,#00f0ff 0%,#ffffff 50%,#cc77ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:titleGlow 3s ease-in-out infinite;margin-bottom:6px;}
+.map-hero h2{font-family:'Orbitron',monospace;font-weight:600;font-size:13px;letter-spacing:4px;color:var(--cyan);opacity:0.7;margin-bottom:8px;}
+@keyframes titleGlow{0%,100%{filter:drop-shadow(0 0 14px rgba(0,240,255,0.5));}50%{filter:drop-shadow(0 0 32px rgba(0,240,255,0.9));}}
+.map-hero p{color:var(--text-muted);font-size:13px;letter-spacing:3px;text-transform:uppercase;}
+.xp-panel{background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.15);border-radius:var(--radius);padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;backdrop-filter:blur(10px);}
+.xp-label{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--text-muted);min-width:24px;}
+.xp-track{flex:1;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.08);border-radius:4px;height:14px;overflow:hidden;position:relative;}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--cyan),#8800ff,var(--purple));background-size:200% 100%;border-radius:4px;transition:width 0.9s cubic-bezier(0.4,0,0.2,1);animation:xpShimmer 2.5s linear infinite;box-shadow:0 0 10px var(--cyan-glow);}
+@keyframes xpShimmer{0%{background-position:0% 0%;}100%{background-position:200% 0%;}}
+.xp-fill::after{content:'';position:absolute;top:0;right:0;width:8px;height:100%;background:white;opacity:0.7;filter:blur(2px);}
+.xp-num{font-family:'Orbitron',monospace;font-size:12px;color:#fff;white-space:nowrap;font-weight:700;}
+.sections-list{display:flex;flex-direction:column;gap:9px;}
+.section-card{border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;gap:14px;transition:all 0.25s cubic-bezier(0.4,0,0.2,1);position:relative;overflow:hidden;border:2px solid;}
+.section-card::after{content:'';position:absolute;top:0;left:0;right:0;height:42%;background:linear-gradient(180deg,rgba(255,255,255,0.07) 0%,transparent 100%);pointer-events:none;border-radius:10px 10px 0 0;}
+.section-card.locked{background:linear-gradient(135deg,rgba(100,90,130,0.35) 0%,rgba(70,60,100,0.3) 100%);border-color:rgba(180,170,210,0.25);cursor:not-allowed;filter:saturate(0.3) brightness(0.7);}
+.section-card.unlocked{background:linear-gradient(135deg,rgba(0,180,255,0.28) 0%,rgba(60,30,180,0.35) 100%);border-color:var(--cyan);cursor:pointer;animation:unlockBreath 3s ease-in-out infinite;}
+@keyframes unlockBreath{0%,100%{box-shadow:0 4px 20px rgba(0,0,0,0.4),0 0 12px rgba(0,240,255,0.25);}50%{box-shadow:0 4px 24px rgba(0,0,0,0.4),0 0 28px rgba(0,240,255,0.55);}}
+.section-card.unlocked:hover{transform:translateX(7px) scale(1.01);border-color:#55ffff;box-shadow:0 6px 28px rgba(0,0,0,0.5),0 0 42px rgba(0,240,255,0.65)!important;animation:none;}
+.section-card.completed{background:linear-gradient(135deg,rgba(0,140,70,0.55) 0%,rgba(0,80,40,0.45) 100%);border-color:var(--green);opacity:0.8;}
+.section-card.revision{background:linear-gradient(135deg,rgba(200,140,0,0.5) 0%,rgba(120,80,0,0.45) 100%);border-color:var(--gold);cursor:pointer;animation:revPulse 2s ease-in-out infinite;}
+@keyframes revPulse{0%,100%{box-shadow:0 4px 20px rgba(0,0,0,0.4),0 0 14px rgba(255,204,0,0.3);}50%{box-shadow:0 4px 24px rgba(0,0,0,0.4),0 0 32px rgba(255,204,0,0.65);}}
+.section-card.revision:hover{transform:translateX(7px) scale(1.01);border-color:#ffee44;box-shadow:0 6px 28px rgba(0,0,0,0.5),0 0 44px rgba(255,204,0,0.75)!important;animation:none;}
+.section-card.revision-done{background:linear-gradient(135deg,rgba(0,140,70,0.5),rgba(0,80,40,0.4));border-color:var(--green);opacity:0.65;}
+.section-card.difficult{background:linear-gradient(135deg,rgba(150,40,220,0.55) 0%,rgba(90,10,150,0.5) 100%);border-color:var(--purple);cursor:pointer;animation:bossPulse 1.6s ease-in-out infinite;}
+@keyframes bossPulse{0%,100%{box-shadow:0 4px 20px rgba(0,0,0,0.4),0 0 16px rgba(204,119,255,0.3);}50%{box-shadow:0 4px 24px rgba(0,0,0,0.4),0 0 38px rgba(204,119,255,0.7);}}
+.section-card.difficult:hover{transform:translateX(7px) scale(1.01);border-color:#ee88ff;box-shadow:0 6px 28px rgba(0,0,0,0.5),0 0 50px rgba(204,119,255,0.8)!important;animation:none;}
+.section-card.difficult-done{background:linear-gradient(135deg,rgba(0,140,70,0.5),rgba(0,80,40,0.4));border-color:var(--green);opacity:0.65;}
+.sc-icon{font-family:'Orbitron',monospace;font-weight:900;font-size:20px;min-width:46px;text-align:center;flex-shrink:0;}
+.section-card.locked .sc-icon{color:rgba(200,190,220,0.5);}
+.section-card.unlocked .sc-icon{color:#ffffff;text-shadow:0 0 16px var(--cyan-glow);}
+.section-card.completed .sc-icon{color:var(--green);text-shadow:0 0 12px var(--green-glow);}
+.section-card.revision .sc-icon{color:#fff8aa;text-shadow:0 0 16px var(--gold-glow);}
+.section-card.revision-done .sc-icon{color:var(--green);}
+.section-card.difficult .sc-icon{color:#ffffff;text-shadow:0 0 20px var(--purple-glow);font-size:22px;}
+.section-card.difficult-done .sc-icon{color:var(--green);}
+.sc-body{flex:1;min-width:0;}
+.sc-title{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;letter-spacing:1.5px;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.section-card.locked .sc-title{color:rgba(200,190,220,0.55);}
+.section-card.unlocked .sc-title{color:#ffffff;}
+.section-card.completed .sc-title{color:#aaffcc;}
+.section-card.revision .sc-title{color:#fff8aa;}
+.section-card.revision-done .sc-title{color:#aaffcc;}
+.section-card.difficult .sc-title{color:#f0ccff;}
+.section-card.difficult-done .sc-title{color:#aaffcc;}
+.sc-desc{font-size:13px;color:rgba(255,255,255,0.45);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.section-card.unlocked .sc-desc{color:rgba(255,255,255,0.65);}
+.section-card.revision .sc-desc{color:rgba(255,248,170,0.65);}
+.section-card.difficult .sc-desc{color:rgba(240,204,255,0.65);}
+.sc-badge{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:1px;padding:5px 11px;border-radius:4px;white-space:nowrap;border:1px solid;flex-shrink:0;font-weight:700;}
+.badge-locked{border-color:rgba(200,190,220,0.3);color:rgba(200,190,220,0.45);background:rgba(100,90,130,0.2);}
+.badge-todo{border-color:var(--cyan);color:#ffffff;background:rgba(0,180,255,0.35);}
+.badge-done{border-color:var(--green);color:#aaffcc;background:rgba(0,160,80,0.3);}
+.badge-required{border-color:var(--gold);color:#fff8aa;background:rgba(180,130,0,0.4);}
+.badge-required-purple{border-color:var(--purple);color:#f0ccff;background:rgba(130,40,200,0.4);}
+.ex-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.12);flex-wrap:wrap;gap:10px;}
+.ex-title{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--cyan);text-shadow:0 0 12px var(--cyan-glow);}
+.hud{display:flex;align-items:center;gap:12px;margin-bottom:16px;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.15);border-radius:var(--radius);padding:11px 16px;flex-wrap:wrap;backdrop-filter:blur(10px);}
+.hud-track{flex:1;min-width:120px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:3px;height:10px;overflow:hidden;}
+.hud-fill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:3px;transition:width 0.4s ease;box-shadow:0 0 8px var(--cyan-glow);}
+.hud-text{font-family:'Orbitron',monospace;font-size:11px;color:#fff;font-weight:700;white-space:nowrap;}
+.hud-ok{font-family:'Orbitron',monospace;font-size:12px;color:var(--green);font-weight:700;}
+.hud-bad{font-family:'Orbitron',monospace;font-size:12px;color:var(--red);font-weight:700;}
+.rule-box{background:rgba(0,240,255,0.06);border:1px solid rgba(0,240,255,0.22);border-radius:var(--radius);padding:14px 18px;margin-bottom:16px;font-size:14px;color:var(--text-dim);line-height:1.7;}
+.rule-box strong{color:var(--cyan);font-weight:700;}
+.rule-box code{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.15);border-radius:4px;padding:2px 8px;font-family:'Rajdhani',sans-serif;font-size:13px;color:#ffffff;letter-spacing:0.5px;}
+.rule-box .rule-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+.rule-box .rule-col{background:rgba(0,0,0,0.2);border-radius:6px;padding:10px 12px;font-size:13px;}
+.rule-box .rule-col h4{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--gold);margin-bottom:6px;}
+.ex-card{background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.22);border-radius:var(--radius);padding:24px 28px;margin-bottom:14px;position:relative;overflow:hidden;animation:cardIn 0.3s cubic-bezier(0.4,0,0.2,1);backdrop-filter:blur(14px);box-shadow:0 8px 32px rgba(0,0,0,0.35);}
+.ex-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),var(--purple),transparent);}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.ex-type-badge{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;}
+.ex-question{font-size:17px;font-weight:600;color:#ffffff;line-height:1.7;margin-bottom:18px;}
+.fill-input{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.25);border-radius:var(--radius-sm);padding:9px 14px;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:600;color:#ffffff;outline:none;transition:all 0.2s;letter-spacing:0.5px;min-width:180px;max-width:100%;}
+.fill-input:focus{border-color:var(--cyan);box-shadow:0 0 0 2px rgba(0,240,255,0.2),0 0 14px rgba(0,240,255,0.2);background:rgba(0,240,255,0.05);}
+.fill-input.correct{border-color:var(--green);background:rgba(0,255,136,0.1);color:var(--green);box-shadow:0 0 0 2px rgba(0,255,136,0.2),0 0 14px var(--green-glow);}
+.fill-input.wrong{border-color:var(--red);background:rgba(255,77,109,0.1);color:var(--red);}
+.mc-options{display:flex;flex-direction:column;gap:9px;margin-bottom:4px;}
+.mc-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius-sm);padding:11px 18px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;color:var(--text-dim);cursor:pointer;transition:all 0.2s;text-align:left;}
+.mc-btn:hover:not(:disabled){border-color:var(--cyan);color:#ffffff;background:rgba(0,240,255,0.08);}
+.mc-btn.selected{border-color:var(--cyan);color:#ffffff;background:rgba(0,240,255,0.12);}
+.mc-btn.correct{border-color:var(--green)!important;color:var(--green)!important;background:rgba(0,255,136,0.12)!important;box-shadow:0 0 12px rgba(0,255,136,0.3);}
+.mc-btn.wrong{border-color:var(--red)!important;color:var(--red)!important;background:rgba(255,77,109,0.12)!important;}
+.mc-btn:disabled{cursor:not-allowed;}
+.word-bank{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;min-height:42px;}
+.word-chip{background:rgba(0,180,255,0.15);border:1px solid rgba(0,180,255,0.4);border-radius:6px;padding:6px 14px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:600;color:#ffffff;cursor:pointer;transition:all 0.18s;user-select:none;}
+.word-chip:hover{background:rgba(0,180,255,0.28);border-color:var(--cyan);transform:translateY(-1px);}
+.word-chip.used{opacity:0.3;cursor:not-allowed;background:rgba(100,100,100,0.15);border-color:rgba(255,255,255,0.1);}
+.answer-area{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:var(--radius-sm);padding:10px 14px;min-height:48px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px;}
+.answer-area .word-chip{background:rgba(60,30,180,0.3);border-color:rgba(120,80,255,0.5);}
+.answer-area .word-chip:hover{background:rgba(80,40,200,0.4);border-color:var(--purple);}
+.answer-area.correct{border-color:var(--green);background:rgba(0,255,136,0.05);}
+.answer-area.wrong{border-color:var(--red);background:rgba(255,77,109,0.05);}
+.reorder-hint{font-size:13px;color:var(--text-muted);margin-bottom:10px;font-style:italic;}
+.feedback-msg{margin-top:10px;font-size:14px;font-weight:600;min-height:20px;}
+.feedback-msg.ok{color:var(--green);}
+.feedback-msg.err{color:var(--red);}
+.action-bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+.btn{font-family:'Orbitron',monospace;font-size:10px;font-weight:700;letter-spacing:2px;padding:11px 22px;border-radius:var(--radius-sm);border:1px solid;cursor:pointer;transition:all 0.2s;backdrop-filter:blur(8px);}
+.btn-primary{background:rgba(0,200,255,0.2);border-color:var(--cyan);color:#ffffff;}
+.btn-primary:hover{background:rgba(0,200,255,0.32);box-shadow:0 0 22px rgba(0,240,255,0.5);transform:translateY(-2px);}
+.btn-secondary{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.22);color:var(--text-dim);}
+.btn-secondary:hover{border-color:rgba(255,255,255,0.5);color:#ffffff;}
+.btn-green{background:rgba(0,200,100,0.22);border-color:var(--green);color:#aaffcc;}
+.btn-green:hover{background:rgba(0,200,100,0.34);box-shadow:0 0 22px rgba(0,255,136,0.5);transform:translateY(-2px);}
+.btn-back{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:1px;padding:7px 14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.07);color:var(--text-dim);border-radius:var(--radius-sm);cursor:pointer;transition:all 0.2s;}
+.btn-back:hover{border-color:var(--cyan);color:var(--cyan);}
+.results-card{background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.2);border-radius:var(--radius);padding:36px;text-align:center;backdrop-filter:blur(14px);box-shadow:0 8px 40px rgba(0,0,0,0.4);position:relative;overflow:hidden;}
+.results-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),var(--green),var(--purple),transparent);}
+.res-pct{font-family:'Orbitron',monospace;font-weight:900;font-size:72px;line-height:1;margin-bottom:8px;}
+.res-pct.pass{color:var(--green);text-shadow:0 0 30px var(--green-glow);animation:winGlow 1.5s ease-in-out infinite;}
+@keyframes winGlow{0%,100%{text-shadow:0 0 20px var(--green-glow);}50%{text-shadow:0 0 50px var(--green-glow),0 0 80px rgba(0,255,136,0.4);}}
+.res-pct.fail{color:var(--red);}
+.res-label{font-family:'Orbitron',monospace;font-size:12px;letter-spacing:4px;margin-bottom:6px;}
+.res-label.pass{color:var(--green);}.res-label.fail{color:var(--red);}
+.res-threshold{font-size:12px;color:var(--text-muted);letter-spacing:1px;margin-bottom:24px;}
+.res-breakdown{display:flex;justify-content:center;gap:36px;margin-bottom:24px;flex-wrap:wrap;}
+.rb-item{text-align:center;}
+.rb-num{font-family:'Orbitron',monospace;font-weight:900;font-size:34px;}
+.rb-num.g{color:var(--green);text-shadow:0 0 14px var(--green-glow);}.rb-num.r{color:var(--red);}
+.rb-label{font-size:9px;letter-spacing:2px;color:var(--text-muted);font-family:'Orbitron',monospace;}
+.retry-notice{background:rgba(255,140,66,0.12);border:1px solid rgba(255,140,66,0.3);border-radius:var(--radius-sm);padding:9px 14px;font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--orange);margin-bottom:12px;}
+.completion-banner{background:rgba(255,255,255,0.09);border:2px solid rgba(255,204,0,0.55);border-radius:var(--radius);padding:40px;text-align:center;backdrop-filter:blur(14px);box-shadow:0 8px 40px rgba(255,204,0,0.2);position:relative;overflow:hidden;}
+.completion-banner::before{content:'';position:absolute;top:0;left:-200%;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:scanGold 2s linear infinite;}
+@keyframes scanGold{to{left:200%;}}
+.cb-emoji{font-size:60px;margin-bottom:14px;display:block;animation:trophy 1s ease-in-out infinite;}
+@keyframes trophy{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-8px) scale(1.05);}}
+.cb-title{font-family:'Orbitron',monospace;font-weight:900;font-size:22px;letter-spacing:4px;color:var(--gold);text-shadow:0 0 25px var(--gold-glow);margin-bottom:8px;}
+.cb-text{color:var(--text-muted);font-size:13px;letter-spacing:2px;}
+.ex-card.flash-correct{animation:fCorrect 0.5s ease forwards!important;}
+.ex-card.flash-wrong{animation:fWrong 0.4s ease forwards!important;}
+@keyframes fCorrect{0%{border-color:rgba(255,255,255,0.22)}40%{border-color:var(--green);box-shadow:0 0 40px var(--green-glow),inset 0 0 30px rgba(0,255,136,0.1)}100%{border-color:rgba(255,255,255,0.22)}}
+@keyframes fWrong{0%{border-color:rgba(255,255,255,0.22)}40%{border-color:var(--red);box-shadow:0 0 25px rgba(255,77,109,0.5)}100%{border-color:rgba(255,255,255,0.22)}}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,10,0.85);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;backdrop-filter:blur(8px);}
+.modal{background:rgba(10,18,40,0.97);border:1px solid rgba(255,255,255,0.18);border-radius:var(--radius);padding:32px;max-width:380px;width:100%;text-align:center;position:relative;}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--red),transparent);}
+.modal h2{font-family:'Orbitron',monospace;font-size:14px;letter-spacing:2px;color:var(--red);margin-bottom:12px;}
+.modal p{color:var(--text-dim);font-size:14px;margin-bottom:24px;line-height:1.7;}
+.modal-actions{display:flex;gap:10px;justify-content:center;}
+</style>
+</head>
+<body>
+<canvas id="starCanvas"></canvas>
+<canvas id="particleCanvas"></canvas>
+<header>
+  <div><div class="logo">GRAMMAR QUEST</div><span class="logo-sub">present simple · unit 1</span></div>
+  <button class="btn-reset" onclick="confirmReset()">&#x27F3; RESET</button>
+</header>
+<div id="screen-map" class="screen active">
+  <div class="map-hero"><h1>GRAMMAR QUEST</h1><h2>PRESENT SIMPLE</h2><p>studia &middot; pratica &middot; diventa master</p></div>
+  <div class="xp-panel">
+    <div class="xp-label">XP</div>
+    <div class="xp-track"><div class="xp-fill" id="overallBar" style="width:0%"></div></div>
+    <div class="xp-num" id="overallText">0/0</div>
+  </div>
+  <div class="sections-list" id="sectionsList"></div>
+</div>
+<div id="screen-exercise" class="screen">
+  <div class="ex-header">
+    <div class="ex-title" id="exTitle"></div>
+    <button class="btn-back" onclick="goMap()">&larr; MAP</button>
+  </div>
+  <div class="hud">
+    <div class="hud-track"><div class="hud-fill" id="hudFill" style="width:0%"></div></div>
+    <div class="hud-text" id="hudText">0/0</div>
+    <span class="hud-ok" id="hudOk">&#x2713; 0</span>
+    <span class="hud-bad" id="hudBad">&#x2717; 0</span>
+  </div>
+  <div id="exerciseArea"></div>
+  <div class="action-bar">
+    <button class="btn btn-primary" id="checkBtn" onclick="checkExercise()">&#x25B6; CONTROLLA</button>
+    <button class="btn btn-secondary" id="nextBtn" onclick="nextExercise()" style="display:none">AVANTI &rarr;</button>
+  </div>
+</div>
+<div id="screen-results" class="screen"></div>
+<div id="resetModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <h2>&#x26A0; RESET</h2>
+    <p>Tutti i progressi verranno cancellati.</p>
+    <div class="modal-actions">
+      <button class="btn" style="background:rgba(255,77,109,0.18);border-color:var(--red);color:var(--red)" onclick="doReset()">CONFERMA</button>
+      <button class="btn btn-secondary" onclick="closeModal()">ANNULLA</button>
+    </div>
+  </div>
+</div>
+<script>
+const sc=document.getElementById('starCanvas'),sctx=sc.getContext('2d');let stars=[];
+function resizeSC(){sc.width=innerWidth;sc.height=innerHeight;stars=[];for(let i=0;i<240;i++)stars.push({x:Math.random()*sc.width,y:Math.random()*sc.height,r:Math.random()*2+0.3,alpha:Math.random()*0.9+0.1,twinkle:Math.random()*Math.PI*2,ts:Math.random()*0.02+0.005,vy:Math.random()*0.08+0.01,color:['#ffffff','#ffffff','#aaddff','#ddaaff','#ffffcc'][Math.floor(Math.random()*5)]});}
+function animStars(){sctx.clearRect(0,0,sc.width,sc.height);stars.forEach(s=>{s.twinkle+=s.ts;const a=s.alpha*(0.4+0.6*Math.sin(s.twinkle));sctx.globalAlpha=a;if(s.r>1.3){sctx.save();sctx.translate(s.x,s.y);sctx.fillStyle=s.color;sctx.beginPath();for(let i=0;i<8;i++){const ang=(i*Math.PI)/4-Math.PI/2,r=i%2===0?s.r*1.6:s.r*0.35;i===0?sctx.moveTo(Math.cos(ang)*r,Math.sin(ang)*r):sctx.lineTo(Math.cos(ang)*r,Math.sin(ang)*r);}sctx.closePath();sctx.fill();sctx.restore();}else{sctx.beginPath();sctx.arc(s.x,s.y,s.r,0,Math.PI*2);sctx.fillStyle=s.color;sctx.fill();}sctx.globalAlpha=1;s.y+=s.vy;if(s.y>sc.height+5){s.y=-5;s.x=Math.random()*sc.width;}});requestAnimationFrame(animStars);}
+window.addEventListener('resize',resizeSC);resizeSC();animStars();
+const pc=document.getElementById('particleCanvas'),pctx=pc.getContext('2d');let particles=[];
+function resizePC(){pc.width=innerWidth;pc.height=innerHeight;}window.addEventListener('resize',resizePC);resizePC();
+function spawnBurst(x,y,color,count=28){for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,sp=Math.random()*7+2;particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2.5,r:Math.random()*4+1,alpha:1,color,gravity:0.18,decay:Math.random()*0.022+0.014,star:false});}const sc2=['#ffffff','#ffffaa','#aaffff'];for(let i=0;i<12;i++){const a=Math.random()*Math.PI*2,sp=Math.random()*11+5;particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-4,r:Math.random()*3+1.5,alpha:1,color:sc2[Math.floor(Math.random()*sc2.length)],gravity:0.12,decay:Math.random()*0.028+0.018,star:true});}}
+function drawSpk(ctx,x,y,r){ctx.beginPath();for(let i=0;i<8;i++){const a=(i*Math.PI)/4-Math.PI/2,rad=i%2===0?r:r*0.35;i===0?ctx.moveTo(x+Math.cos(a)*rad,y+Math.sin(a)*rad):ctx.lineTo(x+Math.cos(a)*rad,y+Math.sin(a)*rad);}ctx.closePath();ctx.fill();}
+function animParticles(){pctx.clearRect(0,0,pc.width,pc.height);particles=particles.filter(p=>p.alpha>0);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=p.gravity;p.alpha-=p.decay;pctx.globalAlpha=Math.max(0,p.alpha);pctx.fillStyle=p.color;if(p.star)drawSpk(pctx,p.x,p.y,p.r);else{pctx.beginPath();pctx.arc(p.x,p.y,p.r,0,Math.PI*2);pctx.fill();}});pctx.globalAlpha=1;requestAnimationFrame(animParticles);}
+animParticles();
+function burstAt(el,color){const r=el.getBoundingClientRect();spawnBurst(r.left+r.width/2,r.top+r.height/2,color);}
+
+const LEVELS=[
+{id:1,type:"study",title:"LEVEL 01 — AFFIRMATIVE",desc:"Present Simple · forma affermativa",
+rule:`<strong>AFFIRMATIVE:</strong> I/You/We/They + <code>base verb</code> &nbsp;&middot;&nbsp; He/She/It + <code>verb+s/es</code><br>I <em>play</em> tennis on Mondays. &nbsp;&middot;&nbsp; She <em>watches</em> TV every evening.<br><small style="color:var(--text-muted)">&#x26A0; Phrasal verbs: scrivi la forma completa &mdash; es. <em>get up</em>, <em>take out</em></small>`,
+exercises:[
+{type:"fill",q:"I ___ my teeth every morning.",hint:"(brush)",a:"brush"},
+{type:"fill",q:"Chloe ___ her messages before breakfast.",hint:"(check)",a:"checks"},
+{type:"fill",q:"I ___ 14 years old.",hint:"(be)",a:"am"},
+{type:"fill",q:"They ___ to school by bus.",hint:"(go)",a:"go"},
+{type:"fill",q:"Noah ___ computer games at the weekend.",hint:"(play)",a:"plays"},
+{type:"fill",q:"I ___ at 7 o'clock every morning.",hint:"(get up)",a:"get up"},
+{type:"fill",q:"My mum ___ the dishes every evening.",hint:"(wash)",a:"washes"},
+{type:"fill",q:"Chloe and Gaia ___ best friends.",hint:"(be)",a:"are"},
+{type:"fill",q:"Lara ___ French and Spanish at school.",hint:"(study)",a:"studies"},
+{type:"fill",q:"Mr Sullivan ___ Art.",hint:"(teach)",a:"teaches"},
+{type:"mc",q:"Which sentence is correct?",opts:["He go to school by bus.","He goes to school by bus.","He gos to school by bus."],correct:1},
+{type:"fill",q:"Mr Sullivan ___ our Art teacher.",hint:"(be)",a:"is"},
+{type:"mc",q:"'Violet ___ the dishwasher every evening.'",opts:["empty","emptys","empties"],correct:2},
+{type:"reorder",instruction:"Forma una frase corretta:",words:["Aurora","always","checks","her messages","in the morning"],answer:"Aurora always checks her messages in the morning"},
+{type:"reorder",instruction:"Forma una frase corretta:",words:["My brother","usually","takes out","the rubbish","in the evening"],answer:"My brother usually takes out the rubbish in the evening"},
+]},
+{id:2,type:"study",title:"LEVEL 02 — NEGATIVE",desc:"Present Simple · forma negativa",
+rule:`<strong>NEGATIVE:</strong> I/You/We/They + <code>don't</code> + base verb &nbsp;&middot;&nbsp; He/She/It + <code>doesn't</code> + base verb<br>I <em>don't like</em> Maths. &nbsp;&middot;&nbsp; He <em>doesn't go</em> to school on Sunday.`,
+exercises:[
+{type:"fill",q:"I ___ Physics. It's too difficult.",hint:"(not like)",a:"don't like",accept:["don't like","do not like"]},
+{type:"fill",q:"Chloe ___ her homework on Sunday mornings.",hint:"(not do)",a:"doesn't do",accept:["doesn't do","does not do"]},
+{type:"fill",q:"They ___ the table — their dad always does it.",hint:"(not lay)",a:"don't lay",accept:["don't lay","do not lay"]},
+{type:"fill",q:"We ___ TV after dinner — we go for a walk.",hint:"(not watch)",a:"don't watch",accept:["don't watch","do not watch"]},
+{type:"fill",q:"Noah ___ vintage clothes.",hint:"(not like)",a:"doesn't like",accept:["doesn't like","does not like"]},
+{type:"fill",q:"Lara ___ free time during the week.",hint:"(not have)",a:"doesn't have",accept:["doesn't have","does not have"]},
+{type:"mc",q:"'She ___ like Biology.' — choose:",opts:["don't","doesn't","isn't"],correct:1},
+{type:"mc",q:"'They ___ do their homework at school.' — choose:",opts:["doesn't","aren't","don't"],correct:2},
+{type:"reorder",instruction:"Metti le parole nell'ordine giusto:",words:["Gaia","doesn't","go","to the cinema","on Sundays"],answer:"Gaia doesn't go to the cinema on Sundays"},
+{type:"reorder",instruction:"Metti le parole nell'ordine giusto:",words:["I","don't","make","my bed","in the morning"],answer:"I don't make my bed in the morning"},
+{type:"fill",q:"Noah ___ at school today — he's ill.",hint:"(be — negativa)",a:"isn't"},
+{type:"mc",q:"'My dad ___ cook dinner — my mum always does.'",opts:["don't","doesn't","don't not"],correct:1},
+{type:"reorder",instruction:"Metti le parole nell'ordine giusto:",words:["She","doesn't","have","a snack","after school"],answer:"She doesn't have a snack after school"},
+{type:"fill",q:"We ___ in the same class — I'm in 1A, she's in 1B.",hint:"(be — negativa)",a:"aren't"},
+{type:"reorder",instruction:"Metti le parole nell'ordine giusto:",words:["Jake","isn't","happy","at school","today"],answer:"Jake isn't happy at school today"},
+]},
+{id:3,type:"study",title:"LEVEL 03 — QUESTIONS",desc:"Present Simple · domande con do/does",
+rule:`<strong>QUESTIONS:</strong> <code>Do</code> + I/you/we/they + base verb? &nbsp;&middot;&nbsp; <code>Does</code> + he/she/it + base verb?<br><em>Do you</em> play tennis? &nbsp;&middot;&nbsp; <em>Does she</em> go to school by bus?`,
+exercises:[
+{type:"fill",q:"___ you have a shower every morning?",hint:"(Do/Does)",a:"Do"},
+{type:"fill",q:"___ Lara study French?",hint:"(Do/Does)",a:"Does"},
+{type:"fill",q:"___ Gaia Italian?",hint:"(be)",a:"Is"},
+{type:"fill",q:"___ they go skateboarding at the weekend?",hint:"(Do/Does)",a:"Do"},
+{type:"fill",q:"___ Noah like vintage clothes?",hint:"(Do/Does)",a:"Does"},
+{type:"fill",q:"___ your friends play computer games?",hint:"(Do/Does)",a:"Do"},
+{type:"reorder",instruction:"Forma una domanda:",words:["Do","you","go shopping","at the weekend?"],answer:"Do you go shopping at the weekend?"},
+{type:"fill",q:"___ you and Noah in the same class?",hint:"(be)",a:"Are"},
+{type:"reorder",instruction:"Forma una domanda:",words:["Does","Chloe","meet her friends","on Saturdays?"],answer:"Does Chloe meet her friends on Saturdays?"},
+{type:"mc",q:"'___ your brother study Computing?'",opts:["Do","Does","Is"],correct:1},
+{type:"mc",q:"'___ you and your friends go to the cinema?'",opts:["Does","Are","Do"],correct:2},
+{type:"reorder",instruction:"Forma una domanda:",words:["Does","your mum","cook dinner","every day?"],answer:"Does your mum cook dinner every day?"},
+{type:"reorder",instruction:"Forma una domanda:",words:["Do","they","play tennis","on Saturdays?"],answer:"Do they play tennis on Saturdays?"},
+{type:"mc",q:"'___ Jake share a room with Cole?'",opts:["Do","Does","Is"],correct:1},
+]},
+{id:4,type:"study",title:"LEVEL 04 — SHORT ANSWERS",desc:"Present Simple · risposte brevi",
+rule:`<strong>SHORT ANSWERS:</strong><br>Do you...? → Yes, I <code>do</code>. / No, I <code>don't</code>.<br>Does he...? → Yes, he <code>does</code>. / No, he <code>doesn't</code>.`,
+exercises:[
+{type:"mc",q:"'Do you play tennis?' — 'Yes, ___'",opts:["I does.","I do.","I am."],correct:1},
+{type:"mc",q:"'Does Lara study Physics?' — 'No, ___'",opts:["she don't.","she isn't.","she doesn't."],correct:2},
+{type:"mc",q:"'Do they watch TV in the evening?' — 'Yes, ___'",opts:["they do.","they does.","they are."],correct:0},
+{type:"mc",q:"'Does Mr Sullivan teach Art?' — 'Yes, ___'",opts:["he do.","he does.","he is."],correct:1},
+{type:"fill",q:"'Do you have a break at school?' — 'No, I ___'",hint:"",a:"don't",accept:["don't","do not"]},
+{type:"fill",q:"'Does Chloe go shopping on Saturdays?' — 'Yes, she ___'",hint:"",a:"does"},
+{type:"fill",q:"'Do your parents go for a walk?' — 'Yes, they ___'",hint:"",a:"do"},
+{type:"fill",q:"'Does he empty the dishwasher?' — 'No, he ___'",hint:"",a:"doesn't",accept:["doesn't","does not"]},
+{type:"mc",q:"'Is Lara good at Maths?' — 'Yes, ___'",opts:["she is.","she does.","she be."],correct:0},
+{type:"mc",q:"'Do you and Gaia go to the park?' — 'No, ___'",opts:["we don't.","we doesn't.","we aren't."],correct:0},
+{type:"fill",q:"'Are you and Noah friends?' — 'Yes, we ___'",hint:"",a:"are"},
+{type:"mc",q:"'Does Jake like relaxing in his room?' — 'Yes, ___'",opts:["it do.","he does.","he is."],correct:1},
+{type:"fill",q:"'Is Mr Sullivan strict?' — 'No, he ___'",hint:"",a:"isn't",accept:["isn't","is not"]},
+]},
+{id:"r14",type:"revision",title:"⟳ RIPASSO — LIVELLI 1-4",desc:"affermativa · negativa · domande · short answers",revises:[1,2,3,4]},
+{id:"d14",type:"difficult",title:"★ BOSS FIGHT — DIFFICILI 1-4",desc:"esercizi sbagliati ≥2 volte · eliminali!",revises:[1,2,3,4]},
+{id:5,type:"study",title:"LEVEL 05 — SPELLING 3RD PERSON",desc:"Spelling della terza persona singolare",
+rule:`<strong>3RD PERSON -s SPELLING:</strong><br>&bull; Verbi normali → <code>+s</code>: play→plays, check→checks<br>&bull; -ch/-sh/-ss/-x/-o → <code>+es</code>: watch→watches, finish→finishes, go→goes<br>&bull; consonante + y → <code>-y+ies</code>: study→studies, tidy→tidies<br>&bull; do → <code>does</code> &nbsp;&middot;&nbsp; have → <code>has</code>`,
+exercises:[
+{type:"fill",q:"watch → she ___",hint:"",a:"watches"},
+{type:"fill",q:"play → he ___",hint:"",a:"plays"},
+{type:"fill",q:"study → she ___",hint:"",a:"studies"},
+{type:"fill",q:"finish → he ___",hint:"",a:"finishes"},
+{type:"fill",q:"go → she ___",hint:"",a:"goes"},
+{type:"fill",q:"tidy → he ___",hint:"",a:"tidies"},
+{type:"fill",q:"brush → she ___",hint:"",a:"brushes"},
+{type:"fill",q:"have → he ___",hint:"",a:"has"},
+{type:"fill",q:"check → she ___",hint:"",a:"checks"},
+{type:"fill",q:"empty → he ___",hint:"",a:"empties"},
+{type:"mc",q:"'She ___ her hair every morning.' — choose:",opts:["washs","washes","washies"],correct:1},
+{type:"mc",q:"'He ___ Biology and Chemistry.' — choose:",opts:["studys","studiess","studies"],correct:2},
+]},
+{id:6,type:"study",title:"LEVEL 06 — ADVERBS OF FREQUENCY",desc:"Avverbi di frequenza · posizione · how often",
+rule:`<strong>ADVERBS OF FREQUENCY:</strong> always &middot; usually &middot; often &middot; sometimes &middot; occasionally &middot; rarely &middot; hardly ever &middot; never<br>&#x1F4CC; <strong>Prima del verbo principale:</strong> I <em>always</em> walk to school.<br>&#x1F4CC; <strong>Dopo il verbo be:</strong> She is <em>often</em> late.<br>&#x1F4CC; <strong>How often...?</strong> → Every day / Once a week / Twice a month`,
+exercises:[
+{type:"reorder",instruction:"Metti le parole nell'ordine giusto:",words:["I","always","walk","to school"],answer:"I always walk to school"},
+{type:"reorder",instruction:"Metti le parole nell'ordine giusto:",words:["She","is","never","late"],answer:"She is never late"},
+{type:"reorder",instruction:"Metti le parole nell'ordine giusto:",words:["They","sometimes","watch","TV","at dinner"],answer:"They sometimes watch TV at dinner"},
+{type:"reorder",instruction:"Metti le parole nell'ordine giusto:",words:["He","is","usually","tired","after school"],answer:"He is usually tired after school"},
+{type:"reorder",instruction:"Metti le parole nell'ordine giusto:",words:["Amy","hardly ever","goes","to the park"],answer:"Amy hardly ever goes to the park"},
+{type:"reorder",instruction:"Metti le parole nell'ordine giusto:",words:["She","is","often","online","in the evening"],answer:"She is often online in the evening"},
+{type:"fill",q:"'___ do you check your messages?' — 'Every morning.'",hint:"(2 words)",a:"How often"},
+{type:"reorder",instruction:"Metti le parole nell'ordine giusto:",words:["My","dad","rarely","washes","the dishes"],answer:"My dad rarely washes the dishes"},
+{type:"reorder",instruction:"Metti le parole nell'ordine giusto:",words:["Chloe","usually","stays","at home","on Sundays"],answer:"Chloe usually stays at home on Sundays"},
+{type:"fill",q:"Rob sees his grandma ___ — every two weeks.",hint:"(once a week / twice a month / every day)",a:"twice a month"},
+{type:"reorder",instruction:"Riordina per formare una domanda:",words:["How","often","do","you","go","to the cinema?"],answer:"How often do you go to the cinema?"},
+{type:"reorder",instruction:"Metti le parole nell'ordine giusto:",words:["I","occasionally","have","a snack","after school"],answer:"I occasionally have a snack after school"},
+]},
+{id:"r56",type:"revision",title:"⟳ RIPASSO — LIVELLI 5-6",desc:"spelling · avverbi di frequenza",revises:[5,6]},
+{id:"d56",type:"difficult",title:"★ BOSS FIGHT — DIFFICILI 5-6",desc:"esercizi sbagliati ≥2 volte · eliminali!",revises:[5,6]},
+{id:7,type:"study",title:"LEVEL 07 — WH- QUESTIONS",desc:"Domande con when · what · where · who · how",
+rule:`<strong>WH- QUESTIONS:</strong> wh-word + <code>do/does</code> + subject + base verb?<br><em>When</em> do you do your homework? &nbsp;&middot;&nbsp; <em>Where</em> does she live?<br><em>What</em> subjects do you like? &nbsp;&middot;&nbsp; <em>How</em> do you get to school?`,
+exercises:[
+{type:"fill",q:"___ do you do your homework? — After dinner.",hint:"(When/Where/What)",a:"When"},
+{type:"fill",q:"___ does Lara live? — In Florida.",hint:"(When/Where/What)",a:"Where"},
+{type:"fill",q:"___ subjects does she study?",hint:"(What/Who/How)",a:"What"},
+{type:"fill",q:"___ do you get to school? — By bus.",hint:"(How/Where/When)",a:"How"},
+{type:"fill",q:"___ do you go to the cinema? — Once a week.",hint:"(How often/What/When)",a:"How often"},
+{type:"reorder",instruction:"Forma una domanda:",words:["When","do","you","do","your homework?"],answer:"When do you do your homework?"},
+{type:"reorder",instruction:"Forma una domanda:",words:["Where","does","your teacher","live?"],answer:"Where does your teacher live?"},
+{type:"reorder",instruction:"Forma una domanda:",words:["What time","does","school","finish?"],answer:"What time does school finish?"},
+{type:"mc",q:"'___ do you prefer, video games or films?'",opts:["Who","What","How"],correct:1},
+{type:"mc",q:"'___ do you sit next to in Maths?' — 'My best friend.'",opts:["What","Where","Who"],correct:2},
+{type:"fill",q:"___ is your best friend? — She's Gaia.",hint:"(Who/What/Where)",a:"Who"},
+{type:"reorder",instruction:"Forma una domanda:",words:["What sport","do","your friends","play?"],answer:"What sport do your friends play?"},
+{type:"reorder",instruction:"Forma una domanda:",words:["How","do","you","get","to school?"],answer:"How do you get to school?"},
+{type:"fill",q:"___ are you from? — I'm from Verona.",hint:"(Where/What/How)",a:"Where"},
+{type:"reorder",instruction:"Forma una domanda:",words:["How old","is","your","English teacher?"],answer:"How old is your English teacher?"},
+]},
+{id:8,type:"study",title:"LEVEL 08 — HAVE GOT",desc:"have got · possesso · struttura completa",
+rule:`<strong>HAVE GOT</strong> = solo possesso (oggetti, animali, familiari, caratteristiche fisiche)<br><div class="rule-grid"><div class="rule-col"><h4>&#x2713; AFFIRMATIVE</h4>I/You/We/They <code>have got</code>.<br>He/She/It <code>has got</code>.<br><small>Short: I've got &middot; She's got</small></div><div class="rule-col"><h4>&#x2717; NEGATIVE</h4>I/You/We/They <code>haven't got</code>.<br>He/She/It <code>hasn't got</code>.</div><div class="rule-col"><h4>? QUESTIONS</h4><code>Have</code> you got a pet?<br><code>Has</code> she got blue eyes?</div><div class="rule-col"><h4>&#x21A9; SHORT ANSWERS</h4>Yes, I <code>have</code>. / No, I <code>haven't</code>.<br>Yes, she <code>has</code>. / No, she <code>hasn't</code>.</div></div>`,
+exercises:[
+{type:"fill",q:"Aurora ___ a brother and a sister.",hint:"(have got — 3a persona)",a:"has got",accept:["has got","'s got"]},
+{type:"fill",q:"I ___ my own room — I share with my sister.",hint:"(have got — negativa)",a:"haven't got",accept:["haven't got","have not got"]},
+{type:"fill",q:"Jake ___ his own room.",hint:"(have got — negativa 3a pers.)",a:"hasn't got",accept:["hasn't got","has not got"]},
+{type:"fill",q:"___ you got a pet at home?",hint:"(Have/Has)",a:"Have"},
+{type:"fill",q:"___ your school got a canteen?",hint:"(Have/Has)",a:"Has"},
+{type:"fill",q:"Gaia ___ a best friend called Rose.",hint:"(have got — affirmativa 3a pers.)",a:"has got",accept:["has got","'s got"]},
+{type:"mc",q:"'Have you got a bike?' — 'Yes, ___'",opts:["I have.","I has.","I do."],correct:0},
+{type:"mc",q:"'Has she got a brother?' — 'No, ___'",opts:["she hasn't.","she haven't.","she doesn't."],correct:0},
+{type:"reorder",instruction:"Forma una frase:",words:["My friend","has got","a dog","and two cats"],answer:"My friend has got a dog and two cats"},
+{type:"reorder",instruction:"Forma una domanda:",words:["Has","your school","got","a gym?"],answer:"Has your school got a gym?"},
+{type:"fill",q:"My sister ___ long hair and blue eyes.",hint:"(has got)",a:"has got",accept:["has got","'s got"]},
+{type:"fill",q:"They ___ a garden. They live in a flat.",hint:"(haven't/hasn't)",a:"haven't got",accept:["haven't got","have not got"]},
+]},
+{id:9,type:"study",title:"LEVEL 09 — HAVE (DO/DOES)",desc:"have · espressioni fisse · neg. e interrog. con do",
+rule:`<strong>HAVE</strong> = possesso + espressioni fisse<br>&#x26A0; Negativa e interrogativa usano <code>DO / DOES</code> — NON have/has come ausiliare!<br><div class="rule-grid"><div class="rule-col"><h4>&#x2713; AFFIRMATIVE</h4>I <code>have</code> breakfast at 7.<br>She <code>has</code> a shower every morning.</div><div class="rule-col"><h4>&#x2717; NEGATIVE</h4>I <code>don't have</code> lunch at school.<br>&#x274C; NOT: He hasn't a lunch</div><div class="rule-col"><h4>? QUESTIONS</h4><code>Do</code> you have a break?<br><code>Does</code> she have a pet?<br>&#x274C; NOT: Has she a pet?</div><div class="rule-col"><h4>&#x21A9; SHORT ANSWERS</h4>Yes, I <code>do</code>. / No, I <code>don't</code>.<br>Yes, she <code>does</code>. / No, she <code>doesn't</code>.</div></div><br><strong>Espressioni fisse:</strong> have breakfast/lunch/dinner &middot; have a shower/bath &middot; have a break &middot; have a snack &middot; have fun &middot; have a chat`,
+exercises:[
+{type:"fill",q:"I ___ a shower every morning.",hint:"(have)",a:"have"},
+{type:"fill",q:"Chloe ___ breakfast before she checks her messages.",hint:"(have — 3a pers.)",a:"has"},
+{type:"fill",q:"I ___ lunch at school — I go home.",hint:"(have — negativa)",a:"don't have",accept:["don't have","do not have"]},
+{type:"fill",q:"He ___ a snack after school.",hint:"(have — negativa 3a pers.)",a:"doesn't have",accept:["doesn't have","does not have"]},
+{type:"fill",q:"___ you have a break at 11?",hint:"(Do/Does)",a:"Do"},
+{type:"fill",q:"___ she have a pet?",hint:"(Do/Does)",a:"Does"},
+{type:"mc",q:"'Do you have a bike?' — 'Yes, ___'",opts:["I have.","I do.","I has."],correct:1},
+{type:"mc",q:"'Does he have a computer?' — 'No, ___'",opts:["he hasn't.","he doesn't.","he don't."],correct:1},
+{type:"fill",q:"She ___ a dog — she doesn't like animals.",hint:"(have — negativa 3a pers.)",a:"doesn't have",accept:["doesn't have","does not have"]},
+{type:"reorder",instruction:"Forma una domanda:",words:["Do","you","have","fun","at school?"],answer:"Do you have fun at school?"},
+{type:"reorder",instruction:"Forma una frase negativa:",words:["She","doesn't","have","a shower","in the evening"],answer:"She doesn't have a shower in the evening"},
+{type:"mc",q:"'___ they have a canteen at school?'",opts:["Has","Do","Does"],correct:1},
+]},
+{id:10,type:"study",title:"LEVEL 10 — HAVE GOT vs HAVE",desc:"confronto · quando usare l'uno e l'altro",
+rule:`<strong>HAVE GOT</strong> → solo <em>possesso</em><br><strong>HAVE</strong> → possesso + espressioni fisse (have breakfast, have a shower, have fun...)<br>&#x26A0; Per il possesso entrambi sono possibili in inglese britannico.<br>&#x274C; Per le espressioni fisse si usa SOLO <code>have</code>: She <em>has</em> a shower. (NOT has got a shower)`,
+exercises:[
+{type:"fill",q:"'She ___ a shower every morning.' — (have/have got)",hint:"(solo una forma è possibile)",a:"has",accept:["has"]},
+{type:"mc",q:"'I ___ a brother.' — choose:",opts:["have got","have","Both are possible"],correct:2},
+{type:"fill",q:"'We ___ lunch at 1 pm.' — (have/have got)",hint:"(solo una forma è possibile)",a:"have",accept:["have"]},
+{type:"mc",q:"'He ___ blue eyes.' — choose:",opts:["has got","has","Both are possible"],correct:2},
+{type:"fill",q:"'They ___ fun at the weekend.' — (have/have got)",hint:"(solo una forma è possibile)",a:"have",accept:["have"]},
+{type:"fill",q:"He ___ a computer. (negativa con HAVE)",hint:"(doesn't have / hasn't got)",a:"doesn't have",accept:["doesn't have","does not have"]},
+{type:"reorder",instruction:"Domanda con HAVE:",words:["Does","she","have","a pet?"],answer:"Does she have a pet?"},
+{type:"reorder",instruction:"Stessa domanda con HAVE GOT:",words:["Has","she","got","a pet?"],answer:"Has she got a pet?"},
+{type:"fill",q:"Aurora ___ lots of friends. (usa HAVE)",hint:"(has/have got)",a:"has",accept:["has"]},
+{type:"fill",q:"I ___ breakfast at 7. (usa HAVE)",hint:"(have/have got)",a:"have",accept:["have"]},
+]},
+{id:"r710",type:"revision",title:"⟳ RIPASSO — LIVELLI 7-8-9-10",desc:"wh- questions · have got · have + do · confronto",revises:[7,8,9,10]},
+{id:"d710",type:"difficult",title:"★ BOSS FIGHT — DIFFICILI 7-10",desc:"esercizi sbagliati ≥2 volte · eliminali!",revises:[7,8,9,10]},
+{id:11,type:"study",title:"LEVEL 11 — LOVE/LIKE/HATE + -ING",desc:"Verbi di preferenza + forma in -ing",
+rule:`<strong>LOVE / LIKE / DON'T MIND / HATE / CAN'T STAND / ENJOY / PREFER</strong> + verb <code>-ing</code><br>I <em>love watching</em> TV. &nbsp;&middot;&nbsp; She <em>hates doing</em> her homework.<br>Jake <em>enjoys relaxing</em> in his room. &nbsp;&middot;&nbsp; Daisy <em>loves taking</em> selfies.<br>&#x26A0; 'like very much' → complemento DOPO: I like playing tennis <em>very much</em>.`,
+exercises:[
+{type:"fill",q:"I love ___ to the cinema on Fridays.",hint:"(go)",a:"going"},
+{type:"fill",q:"Violet hates ___ the rubbish out.",hint:"(take)",a:"taking"},
+{type:"fill",q:"Jake enjoys ___ in his room after school.",hint:"(relax)",a:"relaxing"},
+{type:"fill",q:"Daisy loves ___ selfies with her new phone.",hint:"(take)",a:"taking"},
+{type:"fill",q:"He can't stand ___ the dishes.",hint:"(wash)",a:"washing"},
+{type:"fill",q:"We don't mind ___ homework on weekdays.",hint:"(do)",a:"doing"},
+{type:"fill",q:"Noah likes ___ vintage clothes.",hint:"(wear)",a:"wearing"},
+{type:"fill",q:"She doesn't like ___ up early on Sundays.",hint:"(get)",a:"getting"},
+{type:"mc",q:"'Ravi loves ___ selfies.' — choose:",opts:["take","to taking","taking"],correct:2},
+{type:"reorder",instruction:"Forma una frase corretta:",words:["Daisy","hates","getting up","early"],answer:"Daisy hates getting up early"},
+{type:"fill",q:"I like playing tennis ___.",hint:"(very much — posizione corretta)",a:"very much"},
+{type:"fill",q:"He ___ videos on his phone.",hint:"(enjoy)",a:"enjoys watching",accept:["enjoys watching"]},
+]},
+{id:"r11",type:"revision",title:"⟳ RIPASSO — LIVELLO 11",desc:"verbi di preferenza + -ing",revises:[11]},
+{id:"d11",type:"difficult",title:"★ BOSS FIGHT — DIFFICILI 11",desc:"esercizi sbagliati ≥2 volte · eliminali!",revises:[11]},
+{id:"rfinal",type:"revision",title:"⟳ FINAL BOSS — TUTTO IL PRESENT SIMPLE",desc:"boss finale · tutti i livelli · diventa MASTER!",revises:[1,2,3,4,5,6,7,8,9,10,11]},
+];
+
+const SK='gq_ps5_s',EK='gq_ps5_e';
+let state={},errorMap={};
+function loadState(){try{state=JSON.parse(localStorage.getItem(SK))||{};}catch(e){state={};}try{errorMap=JSON.parse(localStorage.getItem(EK))||{};}catch(e){errorMap={};}LEVELS.forEach(s=>{if(state[s.id]===undefined)state[s.id]='locked';});if(state[LEVELS[0].id]==='locked')state[LEVELS[0].id]='unlocked';saveState();}
+function saveState(){try{localStorage.setItem(SK,JSON.stringify(state));}catch(e){}try{localStorage.setItem(EK,JSON.stringify(errorMap));}catch(e){}}
+function recordError(key){errorMap[key]=(errorMap[key]||0)+1;saveState();}
+function getErrors(ids){let exs=[];ids.forEach(id=>{const s=LEVELS.find(x=>x.id===id);if(s&&s.exercises)exs=exs.concat(s.exercises.map((e,i)=>({...e,_key:`${id}_${i}`})));});return exs.filter(e=>(errorMap[e._key]||0)>=2);}
+function unlockNext(cid){const idx=LEVELS.findIndex(s=>s.id===cid);if(idx<0)return;if(idx+1<LEVELS.length){const n=LEVELS[idx+1];if(state[n.id]==='locked')state[n.id]='unlocked';}autoComplete();saveState();}
+function autoComplete(){let changed=true;while(changed){changed=false;LEVELS.forEach((s,i)=>{if(s.type==='difficult'&&state[s.id]==='unlocked'&&getErrors(s.revises).length===0){state[s.id]='completed';if(i+1<LEVELS.length&&state[LEVELS[i+1].id]==='locked'){state[LEVELS[i+1].id]='unlocked';changed=true;}}});}}
+function renderMap(){
+  const list=document.getElementById('sectionsList');list.innerHTML='';
+  const total=LEVELS.length,done=LEVELS.filter(s=>state[s.id]==='completed').length;
+  document.getElementById('overallBar').style.width=`${(done/total)*100}%`;
+  document.getElementById('overallText').textContent=`${done} / ${total}`;
+  if(done===total){const b=document.createElement('div');b.className='completion-banner';b.innerHTML=`<span class="cb-emoji">&#x1F3C6;</span><div class="cb-title">GRAMMAR MASTER!</div><div class="cb-text">hai completato tutto il Present Simple &middot; missione compiuta</div>`;list.appendChild(b);setTimeout(()=>{for(let i=0;i<8;i++)setTimeout(()=>spawnBurst(Math.random()*innerWidth,Math.random()*innerHeight*0.6,['#00f0ff','#00ff88','#ffcc00','#cc77ff'][i%4],20),i*250);},100);return;}
+  LEVELS.forEach(s=>{
+    const st=state[s.id];const card=document.createElement('div');
+    let cls='section-card ',badge='',icon='';
+    if(typeof s.id==='number')icon=String(s.id).padStart(2,'0');
+    else if(s.type==='revision')icon='&#x21BA;';else icon='&#x2605;';
+    if(st==='completed'){cls+=s.type==='difficult'?'difficult-done':s.type==='revision'?'revision-done':'completed';badge=`<span class="sc-badge badge-done">&#x2713; DONE</span>`;}
+    else if(st==='unlocked'){if(s.type==='revision'){cls+='revision';badge=`<span class="sc-badge badge-required">&#x26A0; OBB.</span>`;}else if(s.type==='difficult'){cls+='difficult';badge=`<span class="sc-badge badge-required-purple">&#x2605; ${getErrors(s.revises).length}</span>`;}else{cls+='unlocked';badge=`<span class="sc-badge badge-todo">&#x25B6; PLAY</span>`;}}
+    else{cls+='locked';badge=`<span class="sc-badge badge-locked">&#x1F512;</span>`;}
+    card.className=cls;card.innerHTML=`<div class="sc-icon">${icon}</div><div class="sc-body"><div class="sc-title">${s.title}</div><div class="sc-desc">${s.desc}</div></div>${badge}`;
+    if(st==='unlocked')card.onclick=()=>openLevel(s);
+    list.appendChild(card);
+  });
+}
+let currentLevel=null,exQueue=[],exIdx=0,okCount=0,badCount=0,exChecked=false,isRetry=false,retryQueue=[],selectedMC=-1,reorderWords=[];
+function openLevel(s){
+  currentLevel=s;let exs;
+  if(s.type==='study'){exs=s.exercises.map((e,i)=>({...e,_key:`${s.id}_${i}`}));}
+  else if(s.type==='revision'){exs=[];s.revises.forEach(id=>{const sec=LEVELS.find(x=>x.id===id);if(sec&&sec.exercises)exs=exs.concat(sec.exercises.map((e,i)=>({...e,_key:`${id}_${i}`})));});exs=shuffle(exs).slice(0,Math.min(exs.length,16));}
+  else{exs=getErrors(s.revises);if(!exs.length){state[s.id]='completed';unlockNext(s.id);saveState();goMap();return;}}
+  exQueue=shuffle(exs);retryQueue=[];exIdx=0;okCount=0;badCount=0;exChecked=false;isRetry=false;
+  document.getElementById('exTitle').textContent=currentLevel.title;
+  showScreen('exercise');renderExercise();
+}
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function renderExercise(){
+  exChecked=false;selectedMC=-1;reorderWords=[];
+  const ex=exQueue[exIdx];
+  const pct=exQueue.length>0?(exIdx/exQueue.length)*100:0;
+  document.getElementById('hudFill').style.width=`${pct}%`;
+  document.getElementById('hudText').textContent=`${exIdx+1}/${exQueue.length}`;
+  document.getElementById('hudOk').textContent=`&#x2713; ${okCount}`;
+  document.getElementById('hudBad').textContent=`&#x2717; ${badCount}`;
+  document.getElementById('checkBtn').style.display='inline-block';
+  document.getElementById('nextBtn').style.display='none';
+  const ruleHtml=currentLevel.type==='study'&&currentLevel.rule?`<div class="rule-box">${currentLevel.rule}</div>`:'';
+  const retryHtml=isRetry?`<div class="retry-notice">&#x26A0; ROUND DI RECUPERO &mdash; ${exQueue.length} esercizi</div>`:'';
+  let cardHtml='';
+  if(ex.type==='fill'){
+    const hintHtml=ex.hint?`<span style="color:var(--text-muted);font-size:14px;font-weight:400"> ${ex.hint}</span>`:'';
+    cardHtml=`<div class="ex-card" id="exCard"><div class="ex-type-badge">// FILL IN THE BLANK</div><div class="ex-question">${ex.q}${hintHtml}</div><input class="fill-input" id="fillInput" autocomplete="off" spellcheck="false" placeholder="scrivi qui..." onkeydown="if(event.key==='Enter'){if(!exChecked)checkExercise();else nextExercise();}"><div class="feedback-msg" id="feedbackMsg"></div></div>`;
+  } else if(ex.type==='mc'){
+    const opts=ex.opts.map((o,i)=>`<button class="mc-btn" id="mcBtn${i}" onclick="selectMC(${i})">${o}</button>`).join('');
+    cardHtml=`<div class="ex-card" id="exCard"><div class="ex-type-badge">// MULTIPLE CHOICE</div><div class="ex-question">${ex.q}</div><div class="mc-options">${opts}</div><div class="feedback-msg" id="feedbackMsg"></div></div>`;
+  } else if(ex.type==='reorder'){
+    const shuffledIdx=shuffle(ex.words.map((_,i)=>i));
+    const chips=shuffledIdx.map(i=>`<div class="word-chip" id="chip${i}" onclick="addWord(${i},this)">${ex.words[i]}</div>`).join('');
+    cardHtml=`<div class="ex-card" id="exCard"><div class="ex-type-badge">// WORD ORDER</div><div class="ex-question">${ex.instruction}</div><div class="reorder-hint">Clicca le parole nell'ordine corretto &middot; clicca sulla risposta per rimuovere</div><div class="word-bank" id="wordBank">${chips}</div><div class="answer-area" id="answerArea"></div><div class="feedback-msg" id="feedbackMsg"></div></div>`;
+  }
+  document.getElementById('exerciseArea').innerHTML=ruleHtml+retryHtml+cardHtml;
+  if(ex.type==='fill')setTimeout(()=>{const i=document.getElementById('fillInput');if(i)i.focus();},50);
+}
+function selectMC(i){if(exChecked)return;selectedMC=i;document.querySelectorAll('.mc-btn').forEach((b,j)=>b.classList.toggle('selected',j===i));}
+function addWord(idx,el){
+  if(exChecked||el.classList.contains('used'))return;
+  el.classList.add('used');const word=el.textContent;reorderWords.push({idx,word});
+  const area=document.getElementById('answerArea');const chip=document.createElement('div');chip.className='word-chip';chip.textContent=word;
+  const ci=idx;chip.onclick=()=>{if(exChecked)return;const pos=reorderWords.findIndex(w=>w.idx===ci);if(pos>-1)reorderWords.splice(pos,1);chip.remove();document.getElementById(`chip${ci}`).classList.remove('used');};
+  area.appendChild(chip);
+}
+function norm(s){return s.trim().toLowerCase().replace(/\s+/g,' ');}
+function checkExercise(){
+  if(exChecked)return;exChecked=true;
+  const ex=exQueue[exIdx];let correct=false;
+  const card=document.getElementById('exCard');const fb=document.getElementById('feedbackMsg');
+  if(ex.type==='fill'){
+    const val=document.getElementById('fillInput').value;
+    const accepted=(ex.accept||[ex.a]).map(norm);correct=accepted.includes(norm(val));
+    const inp=document.getElementById('fillInput');inp.classList.add(correct?'correct':'wrong');inp.disabled=true;
+    fb.className='feedback-msg '+(correct?'ok':'err');fb.textContent=correct?'&#x2713; Corretto!':'&#x2717; Risposta corretta: '+ex.a;
+  } else if(ex.type==='mc'){
+    if(selectedMC<0){exChecked=false;return;}correct=selectedMC===ex.correct;
+    document.querySelectorAll('.mc-btn').forEach((b,i)=>{b.disabled=true;if(i===ex.correct)b.classList.add('correct');else if(i===selectedMC&&!correct)b.classList.add('wrong');});
+    fb.className='feedback-msg '+(correct?'ok':'err');fb.textContent=correct?'&#x2713; Corretto!':'&#x2717; Risposta corretta: '+ex.opts[ex.correct];
+  } else if(ex.type==='reorder'){
+    const given=reorderWords.map(w=>w.word).join(' ');correct=norm(given)===norm(ex.answer);
+    const area=document.getElementById('answerArea');area.classList.add(correct?'correct':'wrong');
+    fb.className='feedback-msg '+(correct?'ok':'err');fb.textContent=correct?'&#x2713; Corretto!':'&#x2717; Risposta corretta: '+ex.answer;
+  }
+  if(correct){okCount++;if(card){card.classList.add('flash-correct');setTimeout(()=>card.classList.remove('flash-correct'),500);}burstAt(card,'#00ff88');}
+  else{badCount++;retryQueue.push(ex);if(!isRetry)recordError(ex._key);if(card){card.classList.add('flash-wrong');setTimeout(()=>card.classList.remove('flash-wrong'),400);}}
+  document.getElementById('hudOk').textContent=`&#x2713; ${okCount}`;document.getElementById('hudBad').textContent=`&#x2717; ${badCount}`;
+  document.getElementById('checkBtn').style.display='none';document.getElementById('nextBtn').style.display='inline-block';
+}
+function nextExercise(){
+  exIdx++;
+  if(exIdx>=exQueue.length){if(retryQueue.length>0){exQueue=shuffle(retryQueue);retryQueue=[];exIdx=0;okCount=0;badCount=0;exChecked=false;isRetry=true;renderExercise();}else showExResults();}
+  else renderExercise();
+}
+function showExResults(){
+  const total=exQueue.length,pct=Math.round((okCount/total)*100),passed=pct>=80;
+  if(passed){state[currentLevel.id]='completed';unlockNext(currentLevel.id);saveState();setTimeout(()=>{for(let i=0;i<6;i++)setTimeout(()=>spawnBurst(Math.random()*innerWidth,Math.random()*innerHeight*0.5,['#00f0ff','#00ff88','#ffcc00','#cc77ff'][i%4],22),i*200);},100);}
+  const btnHtml=passed?`<button class="btn btn-green" onclick="goMap()">&larr; MAPPA</button>`:`<button class="btn btn-primary" onclick="retryLevel()">&#x21BA; RIPROVA</button><button class="btn btn-secondary" onclick="goMap()">&larr; MAPPA</button>`;
+  document.getElementById('screen-results').innerHTML=`<div class="results-card"><div class="res-pct ${passed?'pass':'fail'}">${pct}%</div><div class="res-label ${passed?'pass':'fail'}">${passed?'&#x2713; LEVEL COMPLETED!':'&#x2717; TRY AGAIN'}</div><div class="res-threshold">soglia: 80% &middot; ${okCount}/${total} corretti</div><div class="res-breakdown"><div class="rb-item"><div class="rb-num g">${okCount}</div><div class="rb-label">CORRETTI</div></div><div class="rb-item"><div class="rb-num r">${badCount}</div><div class="rb-label">ERRORI</div></div></div><div class="action-bar" style="justify-content:center;margin-top:24px">${btnHtml}</div></div>`;
+  showScreen('results');
+}
+function retryLevel(){openLevel(currentLevel);}
+function confirmReset(){document.getElementById('resetModal').style.display='flex';}
+function closeModal(){document.getElementById('resetModal').style.display='none';}
+function doReset(){localStorage.removeItem(SK);localStorage.removeItem(EK);state={};errorMap={};closeModal();loadState();goMap();}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(`screen-${id}`).classList.add('active');}
+function goMap(){renderMap();showScreen('map');}
+loadState();renderMap();
+</script>
+</body>
+</html>
